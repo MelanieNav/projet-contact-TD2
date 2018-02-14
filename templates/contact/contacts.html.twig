@@ -1,0 +1,24 @@
+{% block body %}
+<h1>Vos Contacts</h1>
+<ul>
+    {% set i = 0 %}
+    {%  for contact in liste %}
+        <a href="/contact/display/{{ i }}">
+            <div>
+                <li>{{ contact.getNom() }}</li>
+                <li>{{ contact.getPrenom() }}</li>
+                <li>{{ contact.getTel() }}</li>
+                <li>{{ contact.getEmail() }}</li>
+                <li>{{ contact.getMobile() }}</li>
+             </div>
+        </a>
+        <br/>
+        {% set i = i+ 1 %}
+    {% endfor %}
+</ul>
+{% endblock %}
+<form action="/contact/search" method="post">
+    <input type="text" name="filtre"/>
+    <input type="submit" name="filtrer" value="Filtrer"/>
+</form>
+<a href="/contact/new">Ajouter un contact</a>

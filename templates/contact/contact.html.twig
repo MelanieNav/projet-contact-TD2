@@ -1,0 +1,19 @@
+{% block body %}
+    <h1>{{ contact.getNom() }} {{ contact.getPrenom() }}</h1>
+    <ul>
+        <li>Nom : {{ contact.getNom() }}</li>
+        <li>Prénom : {{ contact.getPrenom() }}</li>
+        <li>Téléphone : {{ contact.getTel() }}</li>
+        <li>Email : {{ contact.getEmail() }}</li>
+        <li>Mobile : {{ contact.getMobile() }}</li>
+    </ul>
+    <form action="/contact/delete" method="post">
+        <input type="submit" name="supprimer" value="Supprimer contact"/>
+        <input type="hidden" name="index" value="{{ index }}"/>
+    </form>
+
+    <form action="/contact/edit/{{ index }}" method="get">
+        <input type="submit" name="supprimer" value="Modifier contact"/>
+    </form>
+    <a href="/contacts">Retour à la liste des contacts</a>
+{% endblock %}
