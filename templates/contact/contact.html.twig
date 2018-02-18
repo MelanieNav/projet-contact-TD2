@@ -1,14 +1,16 @@
+{% extends "base.html.twig" %}
 {% block body %}
-    <h1>{{ contact.getNom() }} {{ contact.getPrenom() }}</h1>
+    <title>Contact</title>
+    <h1>{{ contact.getNom()|upper }} {{ contact.getPrenom()|capitalize }}</h1>
     <ul>
-        <li>Nom : {{ contact.getNom() }}</li>
-        <li>Prénom : {{ contact.getPrenom() }}</li>
+        <li>Nom : {{ contact.getNom()|upper }}</li>
+        <li>Prénom : {{ contact.getPrenom()|capitalize }}</li>
         <li>Téléphone : {{ contact.getTel() }}</li>
         <li>Email : {{ contact.getEmail() }}</li>
         <li>Mobile : {{ contact.getMobile() }}</li>
     </ul>
     <form action="/contact/delete" method="post">
-        <input type="submit" name="supprimer" value="Supprimer contact"/>
+        <input type="submit" name="supprimerUn" value="Supprimer contact"/>
         <input type="hidden" name="index" value="{{ index }}"/>
     </form>
 
@@ -16,4 +18,5 @@
         <input type="submit" name="supprimer" value="Modifier contact"/>
     </form>
     <a href="/contacts">Retour à la liste des contacts</a>
+    <a href="/contact/new">Ajouter un contact</a>
 {% endblock %}

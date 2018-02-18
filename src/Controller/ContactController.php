@@ -126,12 +126,27 @@ class ContactController extends Controller
      */
     public function contactDelete(ContactRepository $contactRepo)
     {
-        $contact = $contactRepo->findOneBy(array('id'=>$_POST['index']));
 
-        $em = $this->getDoctrine()->getEntityManager();
-        $em->remove($contact);
-        $em->flush();
+        if(isset($_POST['supprimerUn'])) // Suppression à partir de la page d'un contact
+        {
+            $contact = $contactRepo->findOneBy(array('id'=>$_POST['index']));
+            $em = $this->getDoctrine()->getEntityManager();
+            $em->remove($contact);
+            $em->flush();
+        }
+        elseif (isset($_POST['supprimerPlusieurs'])) // Suppression de plusieurs contacts selectionnés dans contacts
+        {
+            if(!empty($_POST['supprimer'])) {
+                foreach ($_POST['supprimer'] as $valeurIndex) {
+                    $contact = $contactRepo->findOneBy(array('id' => $valeurIndex));
+                    $em = $this->getDoctrine()->getEntityManager();
+                    $em->remove($contact);
+                }
+                $em->flush();
+            }
+        }
 
+        // Je n'utilise pas le repo afin de faciliter la lecture et car c'est ce qui est recommandé dans la documentation symfony
         //$contactRepo->deletes($_POST["index"]);
         return $this->redirectToRoute('contacts', ['contactManager'=>$contactRepo]);
     }

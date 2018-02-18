@@ -1,8 +1,9 @@
-{% extends 'base.html.twig' %}
 {% block body %}
+    <title>Créer votre contact</title>
     <h1>Nouveau contact</h1>
     {{ form_start(form) }}
     {{ form_widget(form) }}
     {{ form_end(form) }}
     <a href="/contacts">Retour à la liste des contacts</a>
+    <a href="/contact/new">Ajouter un contact</a>
 {% endblock %}
