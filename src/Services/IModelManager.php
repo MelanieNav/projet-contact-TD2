@@ -17,9 +17,9 @@ interface IModelManager
     public function insert(Contact $o);
     public function update($c,$o);
     public function deletes( $i);
-    public function select( $i);
-    public function get( $i);
-    public function filterBy( $o);
-    public function size();
+    public function select($i);
+    public function get($i);
+    public function filterBy($o);
+    public function count();
 
 }

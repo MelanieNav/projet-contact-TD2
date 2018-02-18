@@ -8,11 +8,12 @@
 
 namespace App\Controller;
 
+use App\Repository\ContactRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\HttpFoundation\Response;
-use App\Model\Contact;
+use App\Entity\Contact;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -27,8 +28,8 @@ class ContactController extends Controller
     public function index(ContactSessionManager $session)
     {
         //$session->insert(new Contact());
-        $contacts=$session->getAll();
-        return $this->render("contact/contacts.html.twig", ["liste"=>$session->getAll()]);
+        $contacts = $this->getDoctrine()->getManager()->getRepository(Contact::class)->findAll();
+        return $this->render("contact/contacts.html.twig", ["liste"=>$contacts]);
     }
 
     /**
@@ -50,10 +51,12 @@ class ContactController extends Controller
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()){
+
             $contact=$form->getData();
-            $manage= $this->getDoctrine()->getManager();
+
+            $manage = $this->getDoctrine()->getManager();
             $manage->persist($contact);
-            $manage->flush($contact);
+            $manage->flush();
 
             return $this->redirectToRoute('contacts',['ContactManager'=>$session]);
         }
@@ -64,9 +67,10 @@ class ContactController extends Controller
     /**
      * @Route("/contact/edit/{index}", name="contact/edit")
      */
-    public function contactUpdate($index=null, ContactSessionManager $session, Request $request)
+    public function contactUpdate($index=null, ContactRepository $contactRepo, Request $request)
     {
-            $contact =$session->get($index);
+            $contact =$contactRepo->get($index);
+
             $form = $this->createFormBuilder($contact)
                 ->add('nom', TextType::class)
                 ->add('prenom', TextType::class)
@@ -78,7 +82,10 @@ class ContactController extends Controller
             $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()){
-
+            /*$em = $this->getDoctrine()->getManager();
+            $contact = $em->getRepository(Contact::class)->find($index);
+            $index = $request->get("id");
+            $contact = $contactRepo->get($index);*/
             $contactModif=$form->getData();
             $donnee = [
                 'nom'=>$contactModif->getNom(),
@@ -88,8 +95,17 @@ class ContactController extends Controller
                 'mobile'=>$contactModif->getMobile(),
             ];
 
-            $session->update($contact,$donnee);
-            return $this->redirectToRoute('contacts',['ContactManager'=>$session]);
+            /* Fonctionne bien mais n'utilise pas le ContactRepository
+             *
+            $contact->setNom($donnee['nom']);
+            $contact->setPrenom($donnee['prenom']);
+            $contact->setTel($donnee['tel']);
+            $contact->setEmail($donnee['email']);
+            $contact->setMobile($donnee['mobile']);
+            $this->getDoctrine()->getManager()->flush();*/
+
+            $contactRepo->update($contact,$donnee);
+            return $this->redirectToRoute('contacts',['ContactManager'=>$contactRepo]);
         }
 
         return $this->render('contact/new.html.twig', array('form' => $form->createView(),));
@@ -98,28 +114,35 @@ class ContactController extends Controller
     /**
      * @Route("/contact/display/{index}", name="contact/display")
      */
-    public function contactDisplay($index=null, ContactSessionManager $session)
+    public function contactDisplay($index)
     {
-        $contact =$session->get($index);
+        //$contact = $this->getDoctrine()->getManager()->getRepository(Contact::class)->find(["id"=>$index]);
+        $contact = $this->getDoctrine()->getManager()->getRepository(Contact::class)->findOneBy(["id"=>$index]);
         return $this->render("contact/contact.html.twig", ["contact"=>$contact,"index"=>$index]);
     }
 
     /**
      * @Route("/contact/delete", name="contact/delete")
      */
-    public function contactDelete(ContactSessionManager $session)
+    public function contactDelete(ContactRepository $contactRepo)
     {
-        $session->deletes(array($_POST["index"]));
-        return $this->redirectToRoute('contacts', ['contactManager'=>$session]);
+        $contact = $contactRepo->findOneBy(array('id'=>$_POST['index']));
+
+        $em = $this->getDoctrine()->getEntityManager();
+        $em->remove($contact);
+        $em->flush();
+
+        //$contactRepo->deletes($_POST["index"]);
+        return $this->redirectToRoute('contacts', ['contactManager'=>$contactRepo]);
     }
 
     /**
      * @Route("/contact/search", name="contact/search")
      */
-    public function contactSearch(ContactSessionManager $session)
+    public function contactSearch(ContactRepository $contactRepo)
     {
         $filtre = $_POST['filtre'];
-        $contacts = $session->filterBy($filtre);
+        $contacts = $contactRepo->filterBy($filtre);
         return $this->render("contact/contacts.html.twig", ["liste"=>$contacts]);
     }
 }

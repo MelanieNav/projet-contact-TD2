@@ -12,30 +12,33 @@ class Contact
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", length=30)
      */
     private $id;
+
+    // add your own fields
 
     /**
      * @ORM\Column(type="string", length=30)
      */
     private $nom;
     /**
-     * @ORM\Column(type="string", length=40)
+     * @ORM\Column(type="string", length=30)
      */
     private $prenom;
     /**
-     * @ORM\Column(type="string", length=10)
-     */
-    private $tel;
-    /**
-     * @ORM\Column(type="string", length=40)
+     * @ORM\Column(type="string", length=50)
      */
     private $email;
-    /**
-     * @ORM\Column(type="string", length=40)
-     */
-    private $mobile;
+
+
+    public function __construct($nom='', $prenom='', $tel='', $email='',$mobile=''){
+        $this->nom = $nom;
+        $this->prenom = $prenom;
+        $this->tel  = $tel;
+        $this->email = $email;
+        $this->mobile = $mobile;
+    }
 
     /**
      * @return mixed
@@ -72,22 +75,6 @@ class Contact
     /**
      * @return mixed
      */
-    public function getTel()
-    {
-        return $this->tel;
-    }
-
-    /**
-     * @param mixed $tel
-     */
-    public function setTel($tel): void
-    {
-        $this->tel = $tel;
-    }
-
-    /**
-     * @return mixed
-     */
     public function getEmail()
     {
         return $this->email;
@@ -99,6 +86,22 @@ class Contact
     public function setEmail($email): void
     {
         $this->email = $email;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTel()
+    {
+        return $this->tel;
+    }
+
+    /**
+     * @param mixed $tel
+     */
+    public function setTel($tel): void
+    {
+        $this->tel = $tel;
     }
 
     /**
@@ -116,6 +119,12 @@ class Contact
     {
         $this->mobile = $mobile;
     }
-
-
+    /**
+     * @ORM\Column(type="string", length=10)
+     */
+    private $tel;
+    /**
+     * @ORM\Column(type="string", length=10)
+     */
+    private $mobile;
 }
